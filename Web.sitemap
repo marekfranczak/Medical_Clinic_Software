@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
+  <siteMapNode url="~/MainPage.aspx" title="Strona główna"  description="">
+    <siteMapNode title="Przychodnia lekarska" >
+      <siteMapNode url="~/InfoPages/ServicesPage.aspx" title="Nasze usługi" />
+      <siteMapNode url="~/InfoPages/CadrePage.aspx" title="Nasza kadra" />
+      <siteMapNode url="~/InfoPages/ContactPage.aspx" title="Kontakt" />
+    </siteMapNode>
+    <siteMapNode title="Pacjent">
+      <siteMapNode url="~/Users/PatientPage.aspx" title="Konto pacjenta" />
+    </siteMapNode>
+    <siteMapNode title="Prohibited Zone">
+      <siteMapNode url="~/ProhibitedPages/AdminSite.aspx" title="Strona Admina"/>
+    </siteMapNode>
+	<siteMapNode title="Roles">
+	    <siteMapNode url="~/Roles/ManageRoles.aspx" title="Manage Roles"/>
+		<siteMapNode url="~/Roles/UsersAndRoles.aspx" title="Users and Roles" />
+		<siteMapNode url="~/Roles/CreateUserWizardWithRoles.aspx" title="Create Account (with Roles)" />
+		<siteMapNode url="~/Roles/RoleBasedAuthorization.aspx" title="Role-Based Authorization" />
+	</siteMapNode>
+  </siteMapNode>
+</siteMap>

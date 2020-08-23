@@ -1,0 +1,85 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <style type="text/css">
+        .auto-style1 {
+            font-size: small;
+            color: #0000FF;
+        }
+        .auto-style2 {
+            font-size: xx-large;
+            color: #0000FF;
+        }
+        .auto-style3 {
+            width: 100%;
+        }
+        .auto-style4 {
+            height: 23px;
+            text-align: left;
+            width: 600px;
+        }
+        .auto-style5 {
+            height: 23px;
+            width: 150px;
+            text-align: left;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+        <br />
+        <asp:Label ID="Label4" runat="server" CssClass="auto-style2" Text="Przychodnia lekarska - Wylecz Się"></asp:Label>
+        <br />
+        <asp:SiteMapPath ID="SiteMapPath1" runat="server" Font-Names="Verdana" Font-Size="0.8em" PathSeparator=" : ">
+            <CurrentNodeStyle ForeColor="#333333" />
+            <NodeStyle Font-Bold="True" ForeColor="#990000" />
+            <PathSeparatorStyle Font-Bold="True" ForeColor="#990000" />
+            <RootNodeStyle Font-Bold="True" ForeColor="#FF8000" />
+        </asp:SiteMapPath>
+        <br />
+        <table class="auto-style3">
+            <tr>
+                <td class="auto-style5">
+                    <asp:TreeView ID="TreeView1" runat="server" DataSourceID="SiteMapDataSource1" ImageSet="Arrows">
+                        <HoverNodeStyle Font-Underline="True" ForeColor="#5555DD" />
+                        <NodeStyle Font-Names="Tahoma" Font-Size="10pt" ForeColor="Black" HorizontalPadding="5px" NodeSpacing="0px" VerticalPadding="0px" />
+                        <ParentNodeStyle Font-Bold="False" />
+                        <SelectedNodeStyle Font-Underline="True" ForeColor="#5555DD" HorizontalPadding="0px" VerticalPadding="0px" />
+                    </asp:TreeView>
+                    <br />
+                </td>
+                <td class="auto-style4" aria-sort="none">
+        <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+        
+            <p>
+                <br />
+            </p>
+            <p>
+            </p>
+            <p>
+                &nbsp;</p>
+        
+        </asp:ContentPlaceHolder>
+                </td>
+            </tr>
+        </table>
+        <asp:SiteMapDataSource ID="SiteMapDataSource1" runat="server" />
+        <br />
+        <em>
+        <asp:Label ID="Label1" runat="server" Text="Stronę wykonał Marek Frańczak na potrzeby przedmiotu Techniki Internetowe" CssClass="auto-style1"></asp:Label>
+        </em>
+        <br />
+    </div>
+        
+    </form>
+</body>
+</html>
