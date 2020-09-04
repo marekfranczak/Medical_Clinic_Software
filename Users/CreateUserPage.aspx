@@ -4,7 +4,7 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
     <p>
-        <asp:CreateUserWizard ID="CreateUserWizard1" runat="server" BackColor="#F7F7DE" BorderColor="#CCCC99" BorderStyle="Solid" BorderWidth="1px" CancelDestinationPageUrl="~/MainPage.aspx" ContinueDestinationPageUrl="~/PatientPage.aspx" DisplayCancelButton="True" FinishDestinationPageUrl="~/LoginPage.aspx" Font-Names="Verdana" Font-Size="10pt">
+        <asp:CreateUserWizard ID="CreateUser" runat="server" BackColor="#F7F7DE" BorderColor="#CCCC99" BorderStyle="Solid" BorderWidth="1px" CancelDestinationPageUrl="~/MainPage.aspx" ContinueDestinationPageUrl="~/PatientPage.aspx" DisplayCancelButton="True" FinishDestinationPageUrl="~/LoginPage.aspx" Font-Names="Verdana" Font-Size="10pt" OnActiveStepChanged="CreateUser_ActiveStepChanged">
             <ContinueButtonStyle BackColor="#FFFBFF" BorderColor="#CCCCCC" BorderStyle="Solid" BorderWidth="1px" Font-Names="Verdana" ForeColor="#284775" />
             <CreateUserButtonStyle BackColor="#FFFBFF" BorderColor="#CCCCCC" BorderStyle="Solid" BorderWidth="1px" Font-Names="Verdana" ForeColor="#284775" />
             <TitleTextStyle BackColor="#6B696B" Font-Bold="True" ForeColor="White" />
@@ -23,6 +23,53 @@
                         </table>
                     </CustomNavigationTemplate>
                 </asp:CreateUserWizardStep>
+                <asp:WizardStep ID="AdditionalInfo" runat="server" StepType="Step" Title="Dodatkowe Informacje" AllowReturn="False">
+                    <table class="auto-style3">
+                        <tr>
+                            <td>
+                                <asp:Label ID="Label10" runat="server" Text="Imię i Nazwisko"></asp:Label>
+                            </td>
+                            <td>
+                                <asp:TextBox ID="NameTB" runat="server"></asp:TextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <asp:Label ID="Label5" runat="server" Text="Miasto"></asp:Label>
+                            </td>
+                            <td>
+                                <asp:TextBox ID="CityTB" runat="server"></asp:TextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <asp:Label ID="Label6" runat="server" Text="Ulica"></asp:Label>
+                            </td>
+                            <td>
+                                <asp:TextBox ID="StreetTB" runat="server"></asp:TextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <asp:Label ID="Label7" runat="server" Text="Numer budynku"></asp:Label>
+                            </td>
+                            <td>
+                                <asp:TextBox ID="StreetNumberTB" runat="server"></asp:TextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <asp:Label ID="Label8" runat="server" Text="Kod pocztowy"></asp:Label>
+                            </td>
+                            <td>
+                                <asp:TextBox ID="PostalCodeTB" runat="server"></asp:TextBox>
+                            </td>
+                        </tr>
+                    </table>
+                    <asp:Label ID="Label9" runat="server" Text="Data urodzenia"></asp:Label>
+                    <br />
+                    <asp:Calendar ID="DateOfBirth" runat="server"></asp:Calendar>
+                </asp:WizardStep>
                 <asp:CompleteWizardStep runat="server" />
             </WizardSteps>
             <HeaderStyle BackColor="#6B696B" Font-Bold="True" ForeColor="White" HorizontalAlign="Center" />

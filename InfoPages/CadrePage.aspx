@@ -25,20 +25,17 @@
     <p class="auto-style6">
         <asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">
             <asp:View ID="View1" runat="server">
-                <asp:ListView ID="ListView1" runat="server" DataSourceID="SqlDataSource2">
+                <asp:ListView ID="ListView1" runat="server" DataSourceID="CadreSqlDataSource">
                     <AlternatingItemTemplate>
                         <tr style="background-color:#FFF8DC;">
                             <td>
-                                <asp:Label ID="ImięLabel" runat="server" Text='<%# Eval("Imię") %>' />
+                                <asp:Label ID="NameAndSurnameLabel" runat="server" Text='<%# Eval("NameAndSurname") %>' />
                             </td>
                             <td>
-                                <asp:Label ID="NazwiskoLabel" runat="server" Text='<%# Eval("Nazwisko") %>' />
+                                <asp:Label ID="SpecializationLabel" runat="server" Text='<%# Eval("Specialization") %>' />
                             </td>
                             <td>
-                                <asp:Label ID="SpecjalizacjaLabel" runat="server" Text='<%# Eval("Specjalizacja") %>' />
-                            </td>
-                            <td>
-                                <asp:Label ID="KomentarzLabel" runat="server" Text='<%# Eval("Komentarz") %>' />
+                                <asp:Label ID="CommentLabel" runat="server" Text='<%# Eval("Comment") %>' />
                             </td>
                         </tr>
                     </AlternatingItemTemplate>
@@ -49,16 +46,13 @@
                                 <asp:Button ID="CancelButton" runat="server" CommandName="Cancel" Text="Anuluj" />
                             </td>
                             <td>
-                                <asp:TextBox ID="ImięTextBox" runat="server" Text='<%# Bind("Imię") %>' />
+                                <asp:TextBox ID="NameAndSurnameTextBox" runat="server" Text='<%# Bind("NameAndSurname") %>' />
                             </td>
                             <td>
-                                <asp:TextBox ID="NazwiskoTextBox" runat="server" Text='<%# Bind("Nazwisko") %>' />
+                                <asp:TextBox ID="SpecializationTextBox" runat="server" Text='<%# Bind("Specialization") %>' />
                             </td>
                             <td>
-                                <asp:TextBox ID="SpecjalizacjaTextBox" runat="server" Text='<%# Bind("Specjalizacja") %>' />
-                            </td>
-                            <td>
-                                <asp:TextBox ID="KomentarzTextBox" runat="server" Text='<%# Bind("Komentarz") %>' />
+                                <asp:TextBox ID="CommentTextBox" runat="server" Text='<%# Bind("Comment") %>' />
                             </td>
                         </tr>
                     </EditItemTemplate>
@@ -76,32 +70,26 @@
                                 <asp:Button ID="CancelButton" runat="server" CommandName="Cancel" Text="Wyczyść" />
                             </td>
                             <td>
-                                <asp:TextBox ID="ImięTextBox" runat="server" Text='<%# Bind("Imię") %>' />
+                                <asp:TextBox ID="NameAndSurnameTextBox" runat="server" Text='<%# Bind("NameAndSurname") %>' />
                             </td>
                             <td>
-                                <asp:TextBox ID="NazwiskoTextBox" runat="server" Text='<%# Bind("Nazwisko") %>' />
+                                <asp:TextBox ID="SpecializationTextBox" runat="server" Text='<%# Bind("Specialization") %>' />
                             </td>
                             <td>
-                                <asp:TextBox ID="SpecjalizacjaTextBox" runat="server" Text='<%# Bind("Specjalizacja") %>' />
-                            </td>
-                            <td>
-                                <asp:TextBox ID="KomentarzTextBox" runat="server" Text='<%# Bind("Komentarz") %>' />
+                                <asp:TextBox ID="CommentTextBox" runat="server" Text='<%# Bind("Comment") %>' />
                             </td>
                         </tr>
                     </InsertItemTemplate>
                     <ItemTemplate>
                         <tr style="background-color:#DCDCDC;color: #000000;">
                             <td>
-                                <asp:Label ID="ImięLabel" runat="server" Text='<%# Eval("Imię") %>' />
+                                <asp:Label ID="NameAndSurnameLabel" runat="server" Text='<%# Eval("NameAndSurname") %>' />
                             </td>
                             <td>
-                                <asp:Label ID="NazwiskoLabel" runat="server" Text='<%# Eval("Nazwisko") %>' />
+                                <asp:Label ID="SpecializationLabel" runat="server" Text='<%# Eval("Specialization") %>' />
                             </td>
                             <td>
-                                <asp:Label ID="SpecjalizacjaLabel" runat="server" Text='<%# Eval("Specjalizacja") %>' />
-                            </td>
-                            <td>
-                                <asp:Label ID="KomentarzLabel" runat="server" Text='<%# Eval("Komentarz") %>' />
+                                <asp:Label ID="CommentLabel" runat="server" Text='<%# Eval("Comment") %>' />
                             </td>
                         </tr>
                     </ItemTemplate>
@@ -111,10 +99,9 @@
                                 <td runat="server">
                                     <table id="itemPlaceholderContainer" runat="server" border="1" style="background-color: #FFFFFF;border-collapse: collapse;border-color: #999999;border-style:none;border-width:1px;font-family: Verdana, Arial, Helvetica, sans-serif;">
                                         <tr runat="server" style="background-color:#DCDCDC;color: #000000;">
-                                            <th runat="server">Imię</th>
-                                            <th runat="server">Nazwisko</th>
-                                            <th runat="server">Specjalizacja</th>
-                                            <th runat="server">Komentarz</th>
+                                            <th runat="server">NameAndSurname</th>
+                                            <th runat="server">Specialization</th>
+                                            <th runat="server">Comment</th>
                                         </tr>
                                         <tr id="itemPlaceholder" runat="server">
                                         </tr>
@@ -123,6 +110,13 @@
                             </tr>
                             <tr runat="server">
                                 <td runat="server" style="text-align: center;background-color: #CCCCCC;font-family: Verdana, Arial, Helvetica, sans-serif;color: #000000;">
+                                    <asp:DataPager ID="DataPager1" runat="server">
+                                        <Fields>
+                                            <asp:NextPreviousPagerField ButtonType="Button" ShowFirstPageButton="True" ShowNextPageButton="False" ShowPreviousPageButton="False" />
+                                            <asp:NumericPagerField />
+                                            <asp:NextPreviousPagerField ButtonType="Button" ShowLastPageButton="True" ShowNextPageButton="False" ShowPreviousPageButton="False" />
+                                        </Fields>
+                                    </asp:DataPager>
                                 </td>
                             </tr>
                         </table>
@@ -130,32 +124,31 @@
                     <SelectedItemTemplate>
                         <tr style="background-color:#008A8C;font-weight: bold;color: #FFFFFF;">
                             <td>
-                                <asp:Label ID="ImięLabel" runat="server" Text='<%# Eval("Imię") %>' />
+                                <asp:Label ID="NameAndSurnameLabel" runat="server" Text='<%# Eval("NameAndSurname") %>' />
                             </td>
                             <td>
-                                <asp:Label ID="NazwiskoLabel" runat="server" Text='<%# Eval("Nazwisko") %>' />
+                                <asp:Label ID="SpecializationLabel" runat="server" Text='<%# Eval("Specialization") %>' />
                             </td>
                             <td>
-                                <asp:Label ID="SpecjalizacjaLabel" runat="server" Text='<%# Eval("Specjalizacja") %>' />
-                            </td>
-                            <td>
-                                <asp:Label ID="KomentarzLabel" runat="server" Text='<%# Eval("Komentarz") %>' />
+                                <asp:Label ID="CommentLabel" runat="server" Text='<%# Eval("Comment") %>' />
                             </td>
                         </tr>
                     </SelectedItemTemplate>
                 </asp:ListView>
-                <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT [Imię], [Nazwisko], [Specjalizacja], [Komentarz] FROM [Cadre]"></asp:SqlDataSource>
+                <asp:SqlDataSource ID="CadreSqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT UserProfiles.NameAndSurname, Cadre.Specialization, Cadre.Comment FROM aspnet_Roles INNER JOIN aspnet_UsersInRoles ON aspnet_Roles.RoleId = aspnet_UsersInRoles.RoleId INNER JOIN aspnet_Users ON aspnet_UsersInRoles.UserId = aspnet_Users.UserId INNER JOIN Cadre INNER JOIN UserProfiles ON Cadre.UserId = UserProfiles.UserId ON aspnet_Users.UserId = Cadre.UserId AND aspnet_Users.UserId = UserProfiles.UserId WHERE (aspnet_Roles.RoleName = @RoleName)">
+                    <SelectParameters>
+                        <asp:Parameter DefaultValue="doctor" Name="RoleName" />
+                    </SelectParameters>
+                </asp:SqlDataSource>
             </asp:View>
             <asp:View ID="View2" runat="server">
-                <asp:GridView ID="GridView2" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" CellPadding="4" DataSourceID="SqlDataSource1" ForeColor="#333333" GridLines="None">
+                <asp:GridView ID="GridView2" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" CellPadding="4" DataSourceID="PatientCadreSqlDataSource" ForeColor="#333333" GridLines="None">
                     <AlternatingRowStyle BackColor="White" />
                     <Columns>
-                        <asp:CommandField ShowSelectButton="True" />
-                        <asp:BoundField DataField="Imię" HeaderText="Imię" SortExpression="Imię" />
-                        <asp:BoundField DataField="Nazwisko" HeaderText="Nazwisko" SortExpression="Nazwisko" />
-                        <asp:BoundField DataField="Specjalizacja" HeaderText="Specjalizacja" SortExpression="Specjalizacja" />
-                        <asp:BoundField DataField="Komentarz" HeaderText="Komentarz" SortExpression="Komentarz" />
-                        <asp:BoundField DataField="Pokój" HeaderText="Pokój" SortExpression="Pokój" />
+                        <asp:BoundField DataField="NameAndSurname" HeaderText="NameAndSurname" SortExpression="NameAndSurname" />
+                        <asp:BoundField DataField="Specialization" HeaderText="Specialization" SortExpression="Specialization" />
+                        <asp:BoundField DataField="Comment" HeaderText="Comment" SortExpression="Comment" />
+                        <asp:BoundField DataField="Room" HeaderText="Room" SortExpression="Room" />
                     </Columns>
                     <FooterStyle BackColor="#990000" Font-Bold="True" ForeColor="White" />
                     <HeaderStyle BackColor="#990000" Font-Bold="True" ForeColor="White" />
@@ -167,51 +160,10 @@
                     <SortedDescendingCellStyle BackColor="#FCF6C0" />
                     <SortedDescendingHeaderStyle BackColor="#820000" />
                 </asp:GridView>
-                <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT [Imię], [Nazwisko], [Specjalizacja], [Komentarz], [Pokój] FROM [Cadre]"></asp:SqlDataSource>
-            </asp:View>
-            <asp:View ID="View3" runat="server">
-                <asp:GridView ID="GridView3" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" CellPadding="4" DataSourceID="SqlDataSource3" ForeColor="#333333" GridLines="None" DataKeyNames="IDDoktora">
-                    <AlternatingRowStyle BackColor="White" />
-                    <Columns>
-                        <asp:BoundField DataField="IDDoktora" HeaderText="IDDoktora" InsertVisible="False" ReadOnly="True" SortExpression="IDDoktora" />
-                        <asp:BoundField DataField="Imię" HeaderText="Imię" SortExpression="Imię" />
-                        <asp:BoundField DataField="Nazwisko" HeaderText="Nazwisko" SortExpression="Nazwisko" />
-                        <asp:BoundField DataField="Specjalizacja" HeaderText="Specjalizacja" SortExpression="Specjalizacja" />
-                        <asp:BoundField DataField="Komentarz" HeaderText="Komentarz" SortExpression="Komentarz" />
-                        <asp:BoundField DataField="Pokój" HeaderText="Pokój" SortExpression="Pokój" />
-                        <asp:CommandField ShowDeleteButton="True" ShowEditButton="True" />
-                    </Columns>
-                    <EditRowStyle BackColor="#7C6F57" />
-                    <FooterStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
-                    <HeaderStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
-                    <PagerStyle BackColor="#666666" ForeColor="White" HorizontalAlign="Center" />
-                    <RowStyle BackColor="#E3EAEB" />
-                    <SelectedRowStyle BackColor="#C5BBAF" Font-Bold="True" ForeColor="#333333" />
-                    <SortedAscendingCellStyle BackColor="#F8FAFA" />
-                    <SortedAscendingHeaderStyle BackColor="#246B61" />
-                    <SortedDescendingCellStyle BackColor="#D4DFE1" />
-                    <SortedDescendingHeaderStyle BackColor="#15524A" />
-                </asp:GridView>
-                <br />
-                <asp:SqlDataSource ID="SqlDataSource3" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT Imię, Nazwisko, Specjalizacja, Komentarz, Pokój, IDDoktora FROM Cadre" DeleteCommand="DELETE FROM Cadre WHERE (IDDoktora = @IDDoktora)" InsertCommand="INSERT INTO Cadre(Imię, Nazwisko, Specjalizacja, Komentarz, Pokój) VALUES (@Imię, @Nazwisko, @Specjalizacja, @Komentarz, @Pokój)" UpdateCommand="UPDATE Cadre SET Imię = @Imię, Nazwisko = @Nazwisko, Specjalizacja = @Specjalizacja, Komentarz = @Komentarz, Pokój = @Pokój WHERE (IDDoktora = @IDDoktora)">
-                    <DeleteParameters>
-                        <asp:Parameter Name="IDDoktora" />
-                    </DeleteParameters>
-                    <InsertParameters>
-                        <asp:Parameter Name="Imię" />
-                        <asp:Parameter Name="Nazwisko" />
-                        <asp:Parameter Name="Specjalizacja" />
-                        <asp:Parameter Name="Komentarz" />
-                        <asp:Parameter Name="Pokój" />
-                    </InsertParameters>
-                    <UpdateParameters>
-                        <asp:Parameter Name="Imię" />
-                        <asp:Parameter Name="Nazwisko" />
-                        <asp:Parameter Name="Specjalizacja" />
-                        <asp:Parameter Name="Komentarz" />
-                        <asp:Parameter Name="Pokój" />
-                        <asp:Parameter Name="IDDoktora" />
-                    </UpdateParameters>
+                <asp:SqlDataSource ID="PatientCadreSqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT UserProfiles.NameAndSurname, Cadre.Specialization, Cadre.Comment, Cadre.Room FROM aspnet_Roles INNER JOIN aspnet_UsersInRoles ON aspnet_Roles.RoleId = aspnet_UsersInRoles.RoleId INNER JOIN aspnet_Users ON aspnet_UsersInRoles.UserId = aspnet_Users.UserId INNER JOIN Cadre ON aspnet_Users.UserId = Cadre.UserId INNER JOIN UserProfiles ON aspnet_Users.UserId = UserProfiles.UserId WHERE (aspnet_Roles.RoleName = @RoleName)">
+                    <SelectParameters>
+                        <asp:Parameter DefaultValue="doctor" Name="RoleName" />
+                    </SelectParameters>
                 </asp:SqlDataSource>
             </asp:View>
             <br />

@@ -23,7 +23,7 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
 
     private void BindGrid()
     {
-        string sql = "SELECT Services.ServiceId, Services.Service, Services.Price, Services.Room, Cadre.Name FROM Cadre INNER JOIN Services ON Cadre.DoctorId = Services.DoctorId";
+        string sql = "SELECT Services.Service, Services.ServiceId, Services.Price, Services.Room, UserProfiles.NameAndSurname FROM Services INNER JOIN Cadre ON Services.DoctorId = Cadre.DoctorId INNER JOIN UserProfiles ON Cadre.UserId = UserProfiles.UserId";
         string conString = ConfigurationManager.ConnectionStrings["BBB"].ConnectionString;
         using (SqlConnection con = new SqlConnection(conString))
         {
@@ -32,8 +32,8 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
                 using (DataTable dt = new DataTable())
                 {
                     sda.Fill(dt);
-                    Services123.DataSource = dt;
-                    Services123.DataBind();
+                    ServicesGridView.DataSource = dt;
+                    ServicesGridView.DataBind();
                 }
             }
         }
@@ -41,10 +41,11 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
 
     protected void RowDataBound(object sender, GridViewRowEventArgs e)
     {
-        if (e.Row.RowType == DataControlRowType.DataRow && Services123.EditIndex == e.Row.RowIndex)
+        if (e.Row.RowType == DataControlRowType.DataRow && ServicesGridView.EditIndex == e.Row.RowIndex)
         {
             DropDownList ddlDoktor = (DropDownList)e.Row.FindControl("Doctorddl");
-            string sql = "SELECT [DoctorId], [Name] FROM [Cadre]";
+            string sql = "SELECT UserProfiles.NameAndSurname FROM aspnet_Roles INNER JOIN aspnet_UsersInRoles ON aspnet_Roles.RoleId = aspnet_UsersInRoles.RoleId INNER JOIN aspnet_Users ON aspnet_UsersInRoles.UserId = aspnet_Users.UserId INNER JOIN UserProfiles ON aspnet_Users.UserId = UserProfiles.UserId WHERE (aspnet_Roles.RoleName = 'doctor')";
+
             string conStrning = ConfigurationManager.ConnectionStrings["BBB"].ConnectionString;
 
             using (SqlConnection con = new SqlConnection(conStrning))
@@ -55,10 +56,10 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
                     {
                         sda.Fill(dt);
                         ddlDoktor.DataSource = dt;
-                        ddlDoktor.DataTextField = "Name";
-                        ddlDoktor.DataValueField = "Name";
+                        ddlDoktor.DataTextField = "NameAndSurname";
+                        ddlDoktor.DataValueField = "NameAndSurname";
                         ddlDoktor.DataBind();
-                        string selectedName = DataBinder.Eval(e.Row.DataItem, "Name").ToString();
+                        string selectedName = DataBinder.Eval(e.Row.DataItem, "NameAndSurname").ToString();
                         ddlDoktor.Items.FindByValue(selectedName).Selected = true;
                     }
                 }
@@ -68,25 +69,25 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
 
     protected void EditService(object sender, GridViewEditEventArgs e)
     {
-        Services123.EditIndex = e.NewEditIndex;
+        ServicesGridView.EditIndex = e.NewEditIndex;
         this.BindGrid();
     }
 
     protected void CancelEdit(object sender, GridViewCancelEditEventArgs e)
     {
-        Services123.EditIndex = -1;
-        this.DataBind();
+        ServicesGridView.EditIndex = -1;
+        this.BindGrid();
     }
 
     protected void UpdateService(object sender, GridViewUpdateEventArgs e)
     {
-        DropDownList doctor = Services123.Rows[e.RowIndex].FindControl("Doctorddl") as DropDownList;
-        TextBox ServiceTexBox = Services123.Rows[e.RowIndex].FindControl("ServiceTextBox") as TextBox;
-        TextBox PriceTextBox = Services123.Rows[e.RowIndex].FindControl("PriceTextBox") as TextBox;
-        TextBox RoomTextBox = Services123.Rows[e.RowIndex].FindControl("RoomTextBox") as TextBox;
+        DropDownList doctor = ServicesGridView.Rows[e.RowIndex].FindControl("Doctorddl") as DropDownList;
+        TextBox ServiceTexBox = ServicesGridView.Rows[e.RowIndex].FindControl("ServiceTextBox") as TextBox;
+        TextBox PriceTextBox = ServicesGridView.Rows[e.RowIndex].FindControl("PriceTextBox") as TextBox;
+        TextBox RoomTextBox = ServicesGridView.Rows[e.RowIndex].FindControl("RoomTextBox") as TextBox;
 
         int doctorId=0;
-        string sql = "SELECT [DoctorId] FROM [Cadre] WHERE Name = @Name";
+        string sql = "SELECT Cadre.DoctorId FROM UserProfiles INNER JOIN Cadre ON UserProfiles.UserId = Cadre.UserId WHERE (UserProfiles.NameAndSurname = @Name)";
         string conStrning = ConfigurationManager.ConnectionStrings["BBB"].ConnectionString;
         using (SqlConnection con = new SqlConnection(conStrning))
         {
@@ -101,7 +102,7 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
             con.Close();       
         }
 
-        int serviceLabelID = Int32.Parse(Services123.DataKeys[e.RowIndex].Value.ToString());
+        int serviceLabelID = Int32.Parse(ServicesGridView.DataKeys[e.RowIndex].Value.ToString());
         string serviceString = ServiceTexBox.Text.Trim();
         int priceString = Int32.Parse(PriceTextBox.Text.Trim());
         int roomString = Int32.Parse(RoomTextBox.Text.Trim());
@@ -123,6 +124,8 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
                 Response.Redirect(Request.Url.AbsoluteUri);
             }
         }
+
+        BindGrid();
     }
       
     protected void ServicesButton_Click(object sender, EventArgs e)
@@ -135,45 +138,81 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
         MultiView1.SetActiveView(CadreView);
     }
 
-    protected void PatientButton_Click(object sender, EventArgs e)
-    {
-        MultiView1.SetActiveView(PatientView);
-    }
-
     protected void UserButton_Click(object sender, EventArgs e)
     {
         MultiView1.SetActiveView(UserView);
         
     }
 
-    protected void AddCadreButton_Click(object sender, EventArgs e)
+    protected void RegisterUser_ActiveStepChanged(object sender, EventArgs e)
     {
-        if (!Page.IsValid)
-            return;
-    }
-
-
-    protected void RegisterUserWithRoles_ActiveStepChanged(object sender, EventArgs e)
-    {
-        if(RegisterUserWithRoles.ActiveStep.Title == "Gotowe")
+        if(RegisterUser.ActiveStep.Title == "Gotowe")
         {
-            WizardStep SpecifyRolesStep = RegisterUserWithRoles.FindControl("SpecifyRolesStep") as WizardStep;
-
+            WizardStep SpecifyRolesStep = RegisterUser.FindControl("AdditionalInfo") as WizardStep;
             CheckBoxList RoleList = SpecifyRolesStep.FindControl("RoleList") as CheckBoxList;
+            string userName = RegisterUser.UserName;
 
             foreach(ListItem li in RoleList.Items)
             {
                 if (li.Selected)
-                    Roles.AddUserToRole(RegisterUserWithRoles.UserName, li.Text);
+                    Roles.AddUserToRole(userName, li.Text);
             }
+
+            if (Roles.IsUserInRole(userName, "doctor"))
+            {
+                string connectingStringAddDoctor = ConfigurationManager.ConnectionStrings["BBB"].ConnectionString;
+                string addDoctorUrl = "INSERT INTO Cadre(UserId) VALUES  (@UserId)";
+                MembershipUser newDoctor = Membership.GetUser(userName);
+                Guid newDoctorId = (Guid)newDoctor.ProviderUserKey;
+
+                using (SqlConnection myConnection = new SqlConnection(connectingStringAddDoctor))
+                {
+                    myConnection.Open();
+                    SqlCommand myCommand = new SqlCommand(addDoctorUrl, myConnection);
+                    myCommand.Parameters.AddWithValue("@UserId", newDoctorId);
+                    myCommand.ExecuteNonQuery();
+                    myConnection.Close();
+                }
+            }
+
+            WizardStep UserInfo = RegisterUser.FindControl("AdditionalInfo") as WizardStep;
+
+            TextBox Name = UserInfo.FindControl("NameTB") as TextBox;
+            TextBox Town = UserInfo.FindControl("TownTB") as TextBox;
+            TextBox Street = UserInfo.FindControl("StreetTB") as TextBox;
+            TextBox StreetNumber = UserInfo.FindControl("StreetNumberTB") as TextBox;
+            TextBox PostalCode = UserInfo.FindControl("PostalCodeTB") as TextBox;
+            String calendar = DateOfBirth.SelectedDate.Year.ToString() + "-" + DateOfBirth.SelectedDate.Month.ToString() + "-" + DateOfBirth.SelectedDate.Day.ToString();
+
+            MembershipUser newUser = Membership.GetUser(RegisterUser.UserName);
+            Guid newUserId = (Guid)newUser.ProviderUserKey;
+
+            string connectingString = ConfigurationManager.ConnectionStrings["BBB"].ConnectionString;
+            string updateUrl = "INSERT INTO UserProfiles(NameAndSurname, Town, Street, StreetNumber, PostalCode, DateOfBirth, UserId) VALUES  (@NameAndSurname, @Town, @Street, @StreetNumber, @PostalCode, @DateOfBirth, @UserId)";
+
+            using (SqlConnection myConnection = new SqlConnection(connectingString))
+            {
+                myConnection.Open();
+                SqlCommand myCommand = new SqlCommand(updateUrl, myConnection);
+                myCommand.Parameters.AddWithValue("@NameAndSurname", Name.Text.Trim());
+                myCommand.Parameters.AddWithValue("@Town", Town.Text.Trim());
+                myCommand.Parameters.AddWithValue("@Street", Street.Text.Trim());
+                myCommand.Parameters.AddWithValue("@StreetNumber", Int32.Parse(StreetNumber.Text.Trim()));
+                myCommand.Parameters.AddWithValue("@PostalCode", PostalCode.Text.Trim());
+                myCommand.Parameters.AddWithValue("@DateOfBirth", calendar);
+                myCommand.Parameters.AddWithValue("@UserId", newUserId);
+                myCommand.ExecuteNonQuery();
+                myConnection.Close();
+            }
+
         }
     }
 
     protected void CreateNewUserButton_Click(object sender, EventArgs e)
     {
         MultiView1.SetActiveView(CreateNewUserView);
-        WizardStep SpecifyRolesStep = RegisterUserWithRoles.FindControl("SpecifyRolesStep") as WizardStep;
-        CheckBoxList RoleList = SpecifyRolesStep.FindControl("RoleList") as CheckBoxList;
+        WizardStep AdditionalInfo = RegisterUser.FindControl("AdditionalInfo") as WizardStep;
+        CheckBoxList RoleList = AdditionalInfo.FindControl("RoleList") as CheckBoxList;
         RoleList.DataSource = Roles.GetAllRoles();
         RoleList.DataBind();
     }
@@ -184,13 +223,18 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
             return;
 
         int doctorId = 0;
-        string sql = "SELECT [DoctorId] FROM [Cadre] WHERE Name = @Name";
+        string sql = "SELECT [DoctorId] FROM [Cadre] WHERE UserId = @UserId";
         string conStrning = ConfigurationManager.ConnectionStrings["BBB"].ConnectionString;
+        string doctorName = DoctorDropDownList.SelectedItem.Text.Trim();
+        
+        MembershipUser doctorMembership = Membership.GetUser(doctorName);
+        Guid doctorIdGuid = (Guid) doctorMembership.ProviderUserKey;
+
         using (SqlConnection con = new SqlConnection(conStrning))
         {
             SqlCommand cmd = new SqlCommand(sql, con);
             con.Open();
-            cmd.Parameters.AddWithValue("@Name", DoctorDropDownList.SelectedItem.Text.Trim());
+            cmd.Parameters.AddWithValue("@UserId", doctorIdGuid);
             SqlDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
             {
@@ -217,29 +261,102 @@ public partial class ProhibitedPages_AdminSite : System.Web.UI.Page
         BindGrid();
     }
 
-    protected void Services123_RowDeleted(object sender, GridViewDeleteEventArgs e)
+    protected void CadreGridView_RowUpdating(object sender, GridViewUpdateEventArgs e)
     {
-        string connectingString = ConfigurationManager.ConnectionStrings["BBB"].ConnectionString;
-        string updateUrl = "DELETE FROM Services WHERE ServiceId = @ServiceId";
-        int serviceID = Int32.Parse(Services123.DataKeys[e.RowIndex].Value.ToString());
+        if (!Page.IsValid)
+            return;
 
+        //string UserName = UserGrid.DataKeys[e.RowIndex].Value.ToString();
+
+        TextBox SpecializationTextBox = CadreGridView.Rows[e.RowIndex].FindControl("SpecializationTextBox") as TextBox;
+        TextBox CommentTextBox = CadreGridView.Rows[e.RowIndex].FindControl("CommentTextBox") as TextBox;
+        TextBox RoomTextBox = CadreGridView.Rows[e.RowIndex].FindControl("RoomTextBox") as TextBox;
+       
+
+        string conString = ConfigurationManager.ConnectionStrings["BBB"].ConnectionString;
+        using (SqlConnection con = new SqlConnection(conString))
+        {
+            string query = "UPDATE Cadre SET Specialization = @Specialization, Comment = @Comment, Room = @Room WHERE DoctorId = @DoctorId";
+            using (SqlCommand cmd = new SqlCommand(query, con))
+            {
+                con.Open();
+                cmd.Parameters.AddWithValue("@Specialization", SpecializationTextBox.Text.Trim());
+                cmd.Parameters.AddWithValue("@Comment", CommentTextBox.Text.Trim());
+                cmd.Parameters.AddWithValue("@Room", Int32.Parse(RoomTextBox.Text.Trim()));
+                cmd.Parameters.AddWithValue("@DoctorId", CadreGridView.DataKeys[e.RowIndex].Value);
+                cmd.ExecuteNonQuery();
+                con.Close();
+                //Response.Redirect(Request.Url.AbsoluteUri);
+            }
+        }
+
+
+        CadreGridView.EditIndex = -1;
+        
+    }
+
+    protected void DeleteUserButton_Click(object sender, EventArgs e)
+    {
+        string x = GridView4.SelectedRow.Cells[1].Text;
+
+        string connectingString = ConfigurationManager.ConnectionStrings["BBB"].ConnectionString;
+        string deleteProfile = "DELETE FROM UserProfiles WHERE UserId = @UserId";
         using (SqlConnection myConnection = new SqlConnection(connectingString))
         {
             myConnection.Open();
-            SqlCommand myCommand = new SqlCommand(updateUrl, myConnection);
-            myCommand.Parameters.AddWithValue("@ServiceId", serviceID);
+            SqlCommand myCommand = new SqlCommand(deleteProfile, myConnection);
+            myCommand.Parameters.AddWithValue("@UserId", x);
             myCommand.ExecuteNonQuery();
             myConnection.Close();
         }
 
-        BindGrid();
+        
+        string deleteHistry = "DELETE FROM PatientHistory WHERE UserId = @UserId";
+        using (SqlConnection myConnection = new SqlConnection(connectingString))
+        {
+            myConnection.Open();
+            SqlCommand myCommand = new SqlCommand(deleteHistry, myConnection);
+            myCommand.Parameters.AddWithValue("@UserId", x);
+            myCommand.ExecuteNonQuery();
+            myConnection.Close();
+        }
 
+        int doctorId = 0;
+        string sql = "SELECT Cadre.DoctorId FROM Cadre WHERE (UserId = @UserId)";
+        using (SqlConnection con = new SqlConnection(connectingString))
+        {
+            SqlCommand cmd = new SqlCommand(sql, con);
+            con.Open();
+            cmd.Parameters.AddWithValue("@UserId", x);
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                doctorId = reader.GetInt32(0);
+            }
+            con.Close();
+        }
+
+        string updateService = "UPDATE Services SET DoctorId = NULL WHERE DoctorId = @DoctorId";
+        using (SqlConnection myConnection = new SqlConnection(connectingString))
+        {
+            myConnection.Open();
+            SqlCommand myCommand = new SqlCommand(updateService, myConnection);
+            myCommand.Parameters.AddWithValue("@DoctorId", doctorId);
+            myCommand.ExecuteNonQuery();
+            myConnection.Close();
+        }
+
+        string deleteCdre = "DELETE FROM Cadre WHERE UserId = @UserId";
+        using (SqlConnection myConnection = new SqlConnection(connectingString))
+        {
+            myConnection.Open();
+            SqlCommand myCommand = new SqlCommand(deleteCdre, myConnection);
+            myCommand.Parameters.AddWithValue("@UserId", x);
+            myCommand.ExecuteNonQuery();
+            myConnection.Close();
+        }
+
+        Membership.DeleteUser(x);
+        GridView4.DataBind();
     }
-
-
-
-
-
-
-
 }

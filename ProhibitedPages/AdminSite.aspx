@@ -14,9 +14,6 @@
                 <asp:Button ID="CadreButton" runat="server" Text="Kadra" OnClick="CadreButton_Click" />
             </td>
             <td>
-                <asp:Button ID="PatientButton" runat="server" Text="Pacjenci" OnClick="PatientButton_Click" />
-            </td>
-            <td>
                 <asp:Button ID="UserButton" runat="server" Text="Użytkownicy" OnClick="UserButton_Click" />
             </td>
             <td>
@@ -41,12 +38,16 @@
                     <asp:ControlParameter Name="DoctorId" ControlID="ContentPlaceholderID$docName"/>
                 </UpdateParameters>
             </asp:SqlDataSource>
-            <asp:SqlDataSource ID="AddServicesSqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT [DoctorId], [Name]FROM [Cadre]"></asp:SqlDataSource>
+            <asp:SqlDataSource ID="AddServicesSqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT UserProfiles.NameAndSurname, UserProfiles.UserId, aspnet_Roles.RoleName FROM aspnet_UsersInRoles INNER JOIN aspnet_Roles ON aspnet_UsersInRoles.RoleId = aspnet_Roles.RoleId INNER JOIN UserProfiles ON aspnet_UsersInRoles.UserId = UserProfiles.UserId WHERE (aspnet_Roles.RoleName = @RoleName)">
+                <SelectParameters>
+                    <asp:Parameter DefaultValue="doctor" Name="RoleName" />
+                </SelectParameters>
+            </asp:SqlDataSource>
             <br />
             <br />
-            <asp:GridView ID="Services123" DataKeyNames="ServiceId" runat="server" AutoGenerateColumns="false" OnRowEditing="EditService" OnRowDataBound="RowDataBound" OnRowUpdating="UpdateService" OnRowCancelingEdit="CancelEdit" OnRowDeleting="Services123_RowDeleted" >
+            <asp:GridView ID="ServicesGridView" DataKeyNames="ServiceId" runat="server" AutoGenerateColumns="False" OnRowEditing="EditService" OnRowDataBound="RowDataBound" OnRowUpdating="UpdateService" OnRowCancelingEdit="CancelEdit" >
                 <Columns>
-                    <asp:BoundField DataField="ServiceId" HeaderText="Id" />
+                    <asp:CommandField ShowEditButton="true" />
                     <asp:TemplateField HeaderText="Service">
                         <ItemTemplate>
                             <asp:Label ID="ServiceLabel" runat="server" Text='<%# Bind("Service") %>'></asp:Label>
@@ -73,14 +74,12 @@
                     </asp:TemplateField>
                     <asp:TemplateField HeaderText="Doctor">
                         <ItemTemplate>
-                            <asp:Label ID="LabelDoctor" runat="server" Text='<%# Bind("Name") %>'></asp:Label>
+                            <asp:Label ID="LabelDoctor" runat="server" Text='<%# Bind("NameAndSurname") %>'></asp:Label>
                         </ItemTemplate>
                         <EditItemTemplate>
                             <asp:DropDownList ID="Doctorddl" runat="server"></asp:DropDownList>
                         </EditItemTemplate>
                     </asp:TemplateField>
-                    <asp:CommandField ShowEditButton="true" />
-                    <asp:CommandField ShowDeleteButton ="true" />
                 </Columns>
             </asp:GridView>
             <table class="auto-style3">
@@ -89,7 +88,7 @@
                     </td>
                     <td>Cena:<asp:TextBox ID="PriceText" runat="server"></asp:TextBox>
                     </td>
-                    <td>Lekarz:<asp:DropDownList ID="DoctorDropDownList" runat="server" DataSourceID="AddServicesSqlDataSource" DataTextField="Name" DataValueField="DoctorId">
+                    <td>Lekarz:<asp:DropDownList ID="DoctorDropDownList" runat="server" DataSourceID="AddServicesSqlDataSource" DataTextField="NameAndSurname" DataValueField="UserId">
                         </asp:DropDownList>
                     </td>
                     <td>Pokój:<asp:TextBox ID="RoomServiceText" runat="server"></asp:TextBox>
@@ -102,65 +101,46 @@
             <br />
         </asp:View>
         <asp:View ID="CadreView" runat="server">
-            <asp:GridView ID="GridView2" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3" DataKeyNames="DoctorId" DataSourceID="CadreSqlDataSource" GridLines="Vertical">
-                <AlternatingRowStyle BackColor="#DCDCDC" />
+            <asp:GridView ID="CadreGridView" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataSourceID="CadreSqlDataSource" DataKeyNames="DoctorId" OnRowUpdating="CadreGridView_RowUpdating">
                 <Columns>
+                    <asp:CommandField ShowEditButton="True" />
                     <asp:BoundField DataField="DoctorId" HeaderText="DoctorId" InsertVisible="False" ReadOnly="True" SortExpression="DoctorId" />
-                    <asp:TemplateField HeaderText="Name" SortExpression="Name">
+                    <asp:BoundField DataField="NameAndSurname" HeaderText="NameAndSurname" ReadOnly="True" SortExpression="NameAndSurname" />
+                    <asp:TemplateField HeaderText="Specialization" SortExpression="Specialization">
                         <EditItemTemplate>
-                            <asp:TextBox ID="TextBox1" runat="server" Text='<%# Bind("Name") %>'></asp:TextBox>
+                            <asp:TextBox ID="SpecializationTextBox" runat="server" Text='<%# Bind("Specialization") %>'></asp:TextBox>
                         </EditItemTemplate>
                         <ItemTemplate>
-                            <asp:Label ID="Label1" runat="server" Text='<%# Bind("Name") %>'></asp:Label>
+                            <asp:Label ID="Label1" runat="server" Text='<%# Bind("Specialization") %>'></asp:Label>
                         </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:BoundField DataField="Specialization" HeaderText="Specialization" SortExpression="Specialization" />
-                    <asp:BoundField DataField="Comment" HeaderText="Comment" SortExpression="Comment" />
-                    <asp:BoundField DataField="Room" HeaderText="Room" SortExpression="Room" />
-                    <asp:CommandField ShowEditButton="True" />
-                    <asp:CommandField ShowDeleteButton="True" />
+                    <asp:TemplateField HeaderText="Comment" SortExpression="Comment">
+                        <EditItemTemplate>
+                            <asp:TextBox ID="CommentTextBox" runat="server" Text='<%# Bind("Comment") %>'></asp:TextBox>
+                        </EditItemTemplate>
+                        <ItemTemplate>
+                            <asp:Label ID="Label2" runat="server" Text='<%# Bind("Comment") %>'></asp:Label>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                    <asp:TemplateField HeaderText="Room" SortExpression="Room">
+                        <EditItemTemplate>
+                            <asp:TextBox ID="RoomTextBox" runat="server" Text='<%# Bind("Room") %>'></asp:TextBox>
+                        </EditItemTemplate>
+                        <ItemTemplate>
+                            <asp:Label ID="Label3" runat="server" Text='<%# Bind("Room") %>'></asp:Label>
+                        </ItemTemplate>
+                    </asp:TemplateField>
                 </Columns>
-                <FooterStyle BackColor="#CCCCCC" ForeColor="Black" />
-                <HeaderStyle BackColor="#000084" Font-Bold="True" ForeColor="White" />
-                <PagerStyle BackColor="#999999" ForeColor="Black" HorizontalAlign="Center" />
-                <RowStyle BackColor="#EEEEEE" ForeColor="Black" />
-                <SelectedRowStyle BackColor="#008A8C" Font-Bold="True" ForeColor="White" />
-                <SortedAscendingCellStyle BackColor="#F1F1F1" />
-                <SortedAscendingHeaderStyle BackColor="#0000A9" />
-                <SortedDescendingCellStyle BackColor="#CAC9C9" />
-                <SortedDescendingHeaderStyle BackColor="#000065" />
             </asp:GridView>
             <br />
-            <table class="auto-style3">
-                <tr>
-                    <td>Imię:<asp:TextBox ID="NameText" runat="server"></asp:TextBox>
-                    </td>
-                    <td>Specjalizacja:<asp:TextBox ID="SpecializationText" runat="server"></asp:TextBox>
-                    </td>
-                    <td>Komentarz:<asp:TextBox ID="CommentText" runat="server"></asp:TextBox>
-                    </td>
-                    <td>Pokój:<asp:TextBox ID="RoomCadreText" runat="server"></asp:TextBox>
-                    </td>
-                    <td>
-                        <asp:Button ID="AddCadreButton" runat="server" Text="Dodaj" OnClick="AddCadreButton_Click" />
-                    </td>
-                </tr>
-            </table>
-            <asp:SqlDataSource ID="CadreSqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT [DoctorId], [Name], [Specialization], [Comment], [Room] FROM [Cadre] WHERE ([DoctorId] = @DoctorId)" DeleteCommand="DELETE FROM [Cadre] WHERE [DoctorId] = @DoctorId" InsertCommand="INSERT INTO [Cadre] ([Name], [Specialization], [Comment], [Room]) VALUES (@Name, @Specialization, @Comment, @Room)" UpdateCommand="UPDATE [Cadre] SET [Name] = @Name, [Specialization] = @Specialization, [Comment] = @Comment, [Room] = @Room WHERE [DoctorId] = @DoctorId">
+            <asp:SqlDataSource ID="CadreSqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT aspnet_Roles.RoleName, UserProfiles.NameAndSurname, Cadre.Specialization, Cadre.Comment, Cadre.Room, Cadre.DoctorId FROM aspnet_Roles INNER JOIN aspnet_UsersInRoles ON aspnet_Roles.RoleId = aspnet_UsersInRoles.RoleId INNER JOIN UserProfiles ON aspnet_UsersInRoles.UserId = UserProfiles.UserId INNER JOIN Cadre ON aspnet_UsersInRoles.UserId = Cadre.UserId WHERE (aspnet_Roles.RoleName = @RoleName)" DeleteCommand="DELETE FROM [Cadre] WHERE [DoctorId] = @DoctorId" UpdateCommand="UPDATE Cadre SET Specialization = @Specialization, Comment = @Comment, Room = @Room FROM Cadre INNER JOIN UserProfiles ON Cadre.UserId = UserProfiles.UserId WHERE (Cadre.DoctorId = @DoctorId)" >
                 <DeleteParameters>
                     <asp:Parameter Name="DoctorId" Type="Int32" />
                 </DeleteParameters>
-                <InsertParameters>
-                    <asp:Parameter Name="Name" Type="String" />
-                    <asp:Parameter Name="Specialization" Type="String" />
-                    <asp:Parameter Name="Comment" Type="String" />
-                    <asp:Parameter Name="Room" Type="Int32" />
-                </InsertParameters>
                 <SelectParameters>
-                    <asp:ControlParameter ControlID="DoctorDropDownList" Name="DoctorId" PropertyName="SelectedValue" Type="Int32" />
+                    <asp:Parameter DefaultValue="doctor" Name="RoleName" />
                 </SelectParameters>
                 <UpdateParameters>
-                    <asp:Parameter Name="Name" Type="String" />
                     <asp:Parameter Name="Specialization" Type="String" />
                     <asp:Parameter Name="Comment" Type="String" />
                     <asp:Parameter Name="Room" Type="Int32" />
@@ -170,62 +150,39 @@
             <br />
         </asp:View>
         <br />
-        <asp:View ID="PatientView" runat="server">
-            <table class="auto-style3">
-                <tr>
-                    <td>
-                        <asp:GridView ID="GridView3" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataSourceID="PatientSqlDataSource">
-                            <Columns>
-                                <asp:BoundField DataField="UserName" HeaderText="UserName" SortExpression="UserName" />
-                                <asp:BoundField DataField="UserId" HeaderText="UserId" SortExpression="UserId" />
-                            </Columns>
-                        </asp:GridView>
-                    </td>
-                    <td>
-                        <asp:DetailsView ID="DetailsView1" runat="server" AutoGenerateRows="False" DataSourceID="PatientHistrySqlDataSource" Height="50px" Width="125px">
-                            <Fields>
-                                <asp:BoundField DataField="Service" HeaderText="Service" SortExpression="Service" />
-                                <asp:BoundField DataField="Data" HeaderText="Data" SortExpression="Data" />
-                                <asp:BoundField DataField="UserName" HeaderText="UserName" SortExpression="UserName" />
-                                <asp:BoundField DataField="Comment" HeaderText="Comment" SortExpression="Comment" />
-                                <asp:BoundField DataField="Price" HeaderText="Price" SortExpression="Price" />
-                                <asp:BoundField DataField="UserId" HeaderText="UserId" SortExpression="UserId" />
-                            </Fields>
-                        </asp:DetailsView>
-                    </td>
-                </tr>
-            </table>
-            <br />
-            <asp:SqlDataSource ID="PatientSqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT [UserName], [UserId] FROM [vw_aspnet_Users]"></asp:SqlDataSource>
-            <br />
-            <asp:SqlDataSource ID="PatientHistrySqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT Services.Service, PatientHistory.Data, aspnet_Users.UserName, PatientHistory.Comment, Services.Price, aspnet_Users.UserId FROM PatientHistory INNER JOIN Services ON PatientHistory.ServicesId = Services.ServiceId INNER JOIN Patient ON PatientHistory.HistryId = Patient.PatientHistoryId INNER JOIN aspnet_Users ON Patient.UserId = aspnet_Users.UserId WHERE (aspnet_Users.UserName = @UserName) OR (aspnet_Users.UserId = @UserId)">
-                <SelectParameters>
-                    <asp:Parameter Name="UserName" />
-                    <asp:Parameter Name="UserId" />
-                </SelectParameters>
-            </asp:SqlDataSource>
-        </asp:View>
         <br />
         <asp:View ID="UserView" runat="server">
-            <asp:GridView ID="GridView4" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataSourceID="AllUserSqlDataSource">
+            <asp:GridView ID="GridView4" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataSourceID="AllUserSqlDataSource" DataKeyNames="Expr1" CellPadding="4" ForeColor="#333333" GridLines="None">
+                <AlternatingRowStyle BackColor="White" />
                 <Columns>
-                    <asp:BoundField DataField="UserId" HeaderText="UserId" SortExpression="UserId" />
+                    <asp:CommandField ShowSelectButton="True" />
+                    <asp:BoundField DataField="UserId" HeaderText="UserId" SortExpression="UserId" ReadOnly="True" />
                     <asp:BoundField DataField="UserName" HeaderText="UserName" SortExpression="UserName" />
-                    <asp:BoundField DataField="LastActivityDate" HeaderText="LastActivityDate" SortExpression="LastActivityDate" />
-                    <asp:BoundField DataField="Town" HeaderText="Town" SortExpression="Town" />
+                    <asp:BoundField DataField="NameAndSurname" HeaderText="NameAndSurname" SortExpression="NameAndSurname" />
+                    <asp:BoundField DataField="Expr1" HeaderText="Expr1" ReadOnly="True" SortExpression="Expr1" />
+                    <asp:BoundField DataField="Email" HeaderText="Email" ReadOnly="True" SortExpression="Email" />
+                    <asp:BoundField DataField="Password" HeaderText="Password" ReadOnly="True" SortExpression="Password" />
+                    <asp:BoundField DataField="DateOfBirth" HeaderText="DateOfBirth" SortExpression="DateOfBirth" DataFormatString="{0:dd/MM/yyyy}"/>
                     <asp:BoundField DataField="Street" HeaderText="Street" SortExpression="Street" />
-                    <asp:BoundField DataField="Street Number" HeaderText="Street Number" SortExpression="Street Number" />
-                    <asp:BoundField DataField="Postal Code" HeaderText="Postal Code" SortExpression="Postal Code" />
-                    <asp:BoundField DataField="Date of birth" HeaderText="Date of birth" SortExpression="Date of birth" />
-                    <asp:BoundField DataField="Email" HeaderText="Email" SortExpression="Email" />
-                    <asp:BoundField DataField="CreateDate" HeaderText="CreateDate" SortExpression="CreateDate" />
+                    <asp:BoundField DataField="StreetNumber" HeaderText="StreetNumber" SortExpression="StreetNumber" />
+                    <asp:BoundField DataField="PostalCode" HeaderText="PostalCode" SortExpression="PostalCode" />
                     <asp:BoundField DataField="Comment" HeaderText="Comment" SortExpression="Comment" />
-                    <asp:BoundField DataField="Password" HeaderText="Password" SortExpression="Password" />
-                    <asp:BoundField DataField="RoleName" HeaderText="RoleName" SortExpression="RoleName" />
+                    <asp:BoundField DataField="CreateDate" HeaderText="CreateDate" ReadOnly="True" SortExpression="CreateDate" />
+                    <asp:BoundField DataField="LastActivityDate" HeaderText="LastActivityDate" SortExpression="LastActivityDate" ReadOnly="True" />
                 </Columns>
+                <FooterStyle BackColor="#990000" Font-Bold="True" ForeColor="White" />
+                <HeaderStyle BackColor="#990000" Font-Bold="True" ForeColor="White" />
+                <PagerStyle BackColor="#FFCC66" ForeColor="#333333" HorizontalAlign="Center" />
+                <RowStyle BackColor="#FFFBD6" ForeColor="#333333" />
+                <SelectedRowStyle BackColor="#FFCC66" Font-Bold="True" ForeColor="Navy" />
+                <SortedAscendingCellStyle BackColor="#FDF5AC" />
+                <SortedAscendingHeaderStyle BackColor="#4D0000" />
+                <SortedDescendingCellStyle BackColor="#FCF6C0" />
+                <SortedDescendingHeaderStyle BackColor="#820000" />
             </asp:GridView>
+            <asp:Button ID="DeleteUserButton" runat="server" OnClick="DeleteUserButton_Click" Text="Usuń" />
             <br />
-            <asp:SqlDataSource ID="AllUserSqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT aspnet_Users.UserId, aspnet_Users.UserName, aspnet_Users.LastActivityDate, UserProfiles.Town, UserProfiles.Street, UserProfiles.[Street Number], UserProfiles.[Postal Code], UserProfiles.[Date of birth], aspnet_Membership.Email, aspnet_Membership.CreateDate, aspnet_Membership.Comment, aspnet_Membership.Password, aspnet_Roles.RoleName FROM aspnet_Users INNER JOIN UserProfiles ON aspnet_Users.UserId = UserProfiles.UserId INNER JOIN aspnet_Membership ON aspnet_Users.UserId = aspnet_Membership.UserId INNER JOIN aspnet_UsersInRoles ON aspnet_Users.UserId = aspnet_UsersInRoles.UserId INNER JOIN aspnet_Roles ON aspnet_UsersInRoles.RoleId = aspnet_Roles.RoleId WHERE (aspnet_Roles.RoleName = @Role)">
+            <asp:SqlDataSource ID="AllUserSqlDataSource" runat="server" ConnectionString="<%$ ConnectionStrings:BBB %>" SelectCommand="SELECT aspnet_Users.UserId, aspnet_Users.UserName, aspnet_Users.LastActivityDate, UserProfiles.UserId AS Expr1, UserProfiles.Street, aspnet_Membership.Email, aspnet_Membership.CreateDate, aspnet_Membership.Comment, aspnet_Membership.Password, aspnet_Roles.RoleName, UserProfiles.NameAndSurname, UserProfiles.DateOfBirth, UserProfiles.PostalCode, UserProfiles.StreetNumber FROM aspnet_Users INNER JOIN UserProfiles ON aspnet_Users.UserId = UserProfiles.UserId INNER JOIN aspnet_Membership ON aspnet_Users.UserId = aspnet_Membership.UserId INNER JOIN aspnet_UsersInRoles ON aspnet_Users.UserId = aspnet_UsersInRoles.UserId INNER JOIN aspnet_Roles ON aspnet_UsersInRoles.RoleId = aspnet_Roles.RoleId WHERE (aspnet_Roles.RoleName = @Role)">
                 <SelectParameters>
                     <asp:ControlParameter ControlID="RolesDropDownList" DbType="String" DefaultValue="admin" Name="Role" PropertyName="SelectedValue" />
                 </SelectParameters>
@@ -238,23 +195,49 @@
         </asp:View>
         <br />
         <asp:View ID="CreateNewUserView" runat="server">
-            <asp:CreateUserWizard ID="RegisterUserWithRoles" runat="server" BackColor="#F7F6F3" BorderColor="#E6E2D8" BorderStyle="Solid" BorderWidth="1px" ContinueDestinationPageUrl="~/ProhibitedPages/AdminSite.aspx" Font-Names="Verdana" Font-Size="0.8em" LoginCreatedUser="False" OnActiveStepChanged="RegisterUserWithRoles_ActiveStepChanged">
-                <ContinueButtonStyle BackColor="#FFFBFF" BorderColor="#CCCCCC" BorderStyle="Solid" BorderWidth="1px" Font-Names="Verdana" ForeColor="#284775" />
-                <CreateUserButtonStyle BackColor="#FFFBFF" BorderColor="#CCCCCC" BorderStyle="Solid" BorderWidth="1px" Font-Names="Verdana" ForeColor="#284775" />
-                <TitleTextStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
+            <asp:CreateUserWizard ID="RegisterUser" runat="server" ContinueDestinationPageUrl="~/ProhibitedPages/AdminSite.aspx" LoginCreatedUser="False" OnActiveStepChanged="RegisterUser_ActiveStepChanged">
                 <WizardSteps>
                     <asp:CreateUserWizardStep runat="server" />
-                    <asp:WizardStep ID="SpecifyRolesStep" runat="server" AllowReturn="False" StepType="Step" Title="Określ role">
+                    <asp:WizardStep ID="AdditionalInfo" runat="server" AllowReturn="False" StepType="Step" Title="Dodatkowe informacje">
+                        <table class="auto-style3">
+                            <tr>
+                                <td>Imię i nazwisko</td>
+                                <td>
+                                    <asp:TextBox ID="NameTB" runat="server"></asp:TextBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Miasto</td>
+                                <td>
+                                    <asp:TextBox ID="TownTB" runat="server"></asp:TextBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Ulica</td>
+                                <td>
+                                    <asp:TextBox ID="StreetTB" runat="server"></asp:TextBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Numer budynku</td>
+                                <td>
+                                    <asp:TextBox ID="StreetNumberTB" runat="server"></asp:TextBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Kod pocztowy</td>
+                                <td>
+                                    <asp:TextBox ID="PostalCodeTB" runat="server"></asp:TextBox>
+                                </td>
+                            </tr>
+                        </table>
+                        <br />
+                        Data urodzenia<asp:Calendar ID="DateOfBirth" runat="server"></asp:Calendar>
                         <asp:CheckBoxList ID="RoleList" runat="server">
                         </asp:CheckBoxList>
                     </asp:WizardStep>
                     <asp:CompleteWizardStep runat="server" />
                 </WizardSteps>
-                <HeaderStyle BackColor="#5D7B9D" BorderStyle="Solid" Font-Bold="True" Font-Size="0.9em" ForeColor="White" HorizontalAlign="Center" />
-                <NavigationButtonStyle BackColor="#FFFBFF" BorderColor="#CCCCCC" BorderStyle="Solid" BorderWidth="1px" Font-Names="Verdana" ForeColor="#284775" />
-                <SideBarButtonStyle BorderWidth="0px" Font-Names="Verdana" ForeColor="White" />
-                <SideBarStyle BackColor="#5D7B9D" BorderWidth="0px" Font-Size="0.9em" VerticalAlign="Top" />
-                <StepStyle BorderWidth="0px" />
             </asp:CreateUserWizard>
         </asp:View>
         <br />
